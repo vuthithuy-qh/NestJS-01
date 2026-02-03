@@ -3,13 +3,14 @@ import {
     Column,
     CreateDateColumn,
     DeleteDateColumn,
-    Entity, OneToOne,
+    Entity, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {Exclude} from "class-transformer";
 import {UserRole} from "../enum/user-role.enum";
 import * as bcrypt from 'bcrypt';
+import {UserAddress} from "./user-address.entity";
 
 
 @Entity('users')
@@ -30,8 +31,9 @@ export class User{
     @Column({ nullable: true })
     phone: string;
 
-    @Column({ nullable: true })
-    address: string;
+
+    @OneToMany(() => UserAddress, ua => ua.user)
+    addresses: UserAddress[];
 
     @OneToOne('ShoppingCart', (cart: any) => cart.user)
     cart: any;

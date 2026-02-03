@@ -1,164 +1,216 @@
-import {BadRequestException, ConflictException, Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from "@nestjs/typeorm";
-import {User} from "./entities/user.entity";
-import {Repository} from "typeorm";
-import {CreateUserDto} from "./dto/create-user.dto";
-import {FilterUserDto} from "./dto/filter-user.dto";
-import {PaginatedUserResponse} from "./dto/paginated-user-response";
-import {UpdateUserDto} from "../cats/dto/update-user.dto";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { User } from './entities/user.entity';
+import { Country } from './entities/country.entity';
+import { Address } from './entities/address.entity';
+import { UserAddress } from './entities/user-address.entity';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
+import { PaginatedUserResponse } from './dto/paginated-user-response';
+import { UpdateUserDto } from '../cats/dto/update-user.dto';
+import { CreateAddressDto } from './dto/create-address.dto';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
-    constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-    ) {}
+    @InjectRepository(Country)
+    private readonly countryRepository: Repository<Country>,
 
-    async create(createUserDto: CreateUserDto): Promise<User>{
-        const existingUser = await this.userRepository.findOne({
-            where: {email: createUserDto.email},
-            withDeleted: true,
-        })
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
 
-        if(existingUser){
-            throw new ConflictException('Email already in use');
-        }
+    @InjectRepository(UserAddress)
+    private readonly userAddressRepository: Repository<UserAddress>,
+  ) {}
 
-        const user = this.userRepository.create(createUserDto);
-        return await this.userRepository.save(user);
+  // ================= CREATE USER =================
+  async create(dto: CreateUserDto): Promise<User> {
+    const existing = await this.userRepository.findOne({
+      where: { email: dto.email },
+      withDeleted: true,
+    });
+
+    if (existing) {
+      throw new ConflictException('Email already in use');
     }
 
-    async findAll(filterDto: FilterUserDto): Promise<PaginatedUserResponse>{
-        const {
-            role, isActive,search, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC',
-        } = filterDto;
+    const user = this.userRepository.create(dto);
+    return this.userRepository.save(user);
+  }
 
-        const queryBuilder = this.userRepository.createQueryBuilder('user');
-        if (role) {
-            queryBuilder.andWhere('user.role = :role', { role });
-        }
+  // ================= FIND ALL =================
+  async findAll(filter: FilterUserDto): Promise<PaginatedUserResponse> {
+    const {
+      role,
+      isActive,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+    } = filter;
 
-        if (isActive !== undefined) {
-            queryBuilder.andWhere('user.isActive = :isActive', { isActive });
-        }
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.addresses', 'ua')
+      .leftJoinAndSelect('ua.address', 'address')
+      .leftJoinAndSelect('address.country', 'country');
 
-        if (search) {
-            queryBuilder.andWhere(
-                '(user.fullName LIKE :search OR user.email LIKE :search OR user.phone LIKE :search)',
-                { search: `%${search}%` },
-            );
-        }
+    if (role) qb.andWhere('user.role = :role', { role });
+    if (isActive !== undefined)
+      qb.andWhere('user.isActive = :isActive', { isActive });
 
-        // Pagination
-        const skip = (page - 1) * limit;
-        queryBuilder.skip(skip).take(limit);
-
-        // Sorting
-        queryBuilder.orderBy(`user.${sortBy}`, sortOrder);
-
-        const [data, total] = await queryBuilder.getManyAndCount();
-
-        return {
-            data,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
-        };
+    if (search) {
+      qb.andWhere(
+        '(user.fullName LIKE :s OR user.email LIKE :s OR user.phone LIKE :s)',
+        { s: `%${search}%` },
+      );
     }
 
-    async findOne(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { id } });
+    qb.skip((page - 1) * limit).take(limit);
+    qb.orderBy(`user.${sortBy}`, sortOrder as 'ASC' | 'DESC');
 
-        if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
-        }
+    const [users, total] = await qb.getManyAndCount();
 
-        return user;
+    const data = users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      phone: user.phone,
+      addresses: user.addresses.map((ua) => ({
+        id: ua.address.id,
+        unit_number: ua.address.unit_number,
+        street_number: ua.address.street_number,
+        address_line1: ua.address.address_line1,
+        address_line2: ua.address.address_line2,
+        city: ua.address.city,
+        region: ua.address.region,
+        postal_code: ua.address.postal_code,
+        country: ua.address.country.country_name,
+      })),
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }));
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  // ================= FIND ONE =================
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  // ================= UPDATE =================
+  async update(id: number, dto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+
+    if (dto.email && dto.email !== user.email) {
+      const exists = await this.userRepository.findOne({
+        where: { email: dto.email },
+      });
+      if (exists) throw new ConflictException('Email already exists');
     }
 
-    async findByEmail(email: string): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { email } });
+    Object.assign(user, dto);
+    return this.userRepository.save(user);
+  }
 
-        if (!user) {
-            throw new NotFoundException(`User with email ${email} not found`);
-        }
+  // ================= DELETE =================
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    await this.userRepository.softRemove(user);
+    return { message: 'User deleted' };
+  }
 
-        return user;
+  async restore(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!user || !user.deletedAt)
+      throw new BadRequestException('User not deleted');
+
+    await this.userRepository.restore(id);
+    return this.findOne(id);
+  }
+
+  async hardDelete(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    await this.userRepository.remove(user);
+    return { message: 'User permanently deleted' };
+  }
+
+  // ================= ADD ADDRESS =================
+  async addAddress(userId: number, dto: CreateAddressDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['addresses'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const country = await this.countryRepository.findOne({
+      where: { id: dto.country_id },
+    });
+    if (!country) throw new BadRequestException('Country not found');
+
+    const address = this.addressRepository.create({
+      unit_number: dto.unit_number,
+      street_number: dto.street_number,
+      address_line1: dto.address_line1,
+      address_line2: dto.address_line2,
+      city: dto.city,
+      region: dto.region,
+      postal_code: dto.postal_code,
+      country,
+    });
+
+    await this.addressRepository.save(address);
+
+    if (dto.is_default) {
+      await this.userAddressRepository.update(
+        { user: { id: userId } },
+        { is_default: false },
+      );
     }
 
-    async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-        const user = await this.findOne(id);
+    const userAddress = this.userAddressRepository.create({
+      user,
+      address,
+      is_default: dto.is_default ?? false,
+    });
 
-        // Kiểm tra email mới có bị trùng không
-        if (updateUserDto.email && updateUserDto.email !== user.email) {
-            const existingUser = await this.userRepository.findOne({
-                where: { email: updateUserDto.email },
-            });
-
-            if (existingUser) {
-                throw new ConflictException('Email already exists');
-            }
-        }
-
-        Object.assign(user, updateUserDto);
-
-        return await this.userRepository.save(user);
-    }
-
-
-    async remove(id: number): Promise<{ message: string }> {
-        const user = await this.findOne(id);
-        await this.userRepository.softRemove(user);
-
-        return { message: `User with ID ${id} has been soft deleted` };
-    }
-
-    async restore(id: number): Promise<User> {
-        const user = await this.userRepository.findOne({
-            where: { id },
-            withDeleted: true,
-        });
-
-        if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
-        }
-
-        if (!user.deletedAt) {
-            throw new BadRequestException(`User with ID ${id} is not deleted`);
-        }
-
-        await this.userRepository.restore(id);
-
-        return this.findOne(id);
-    }
-
-    async hardDelete(id: number): Promise<{ message: string }> {
-        const user = await this.userRepository.findOne({
-            where: { id },
-            withDeleted: true,
-        });
-
-        if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
-        }
-
-        await this.userRepository.remove(user);
-
-        return { message: `User with ID ${id} has been permanently deleted` };
-    }
-
-    async count() : Promise<{total: number; admins: number; users: number; active: number; inactive: number}>{
-        const total = await this.userRepository.count();
-        const admins = await this.userRepository.count({where: {role: 'admin' as any}});
-        const users = await this.userRepository.count({where: {role: 'user' as any}});
-        const active = await this.userRepository.count({where: {isActive: true}});
-        const inactive = await this.userRepository.count({where: {isActive: false}});
-
-        return {total, admins, users, active, inactive};
-    }
-
-
-
+    return this.userAddressRepository.save(userAddress);
+  }
 }
