@@ -16,6 +16,10 @@ import { PromotionModule } from './modules/promotion/promotion.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { MailModule } from './providers/mailersend.provider/mail.module';
+import { SmsModule } from './providers/sms.provider/sms.module';
+import { GhnModule } from './modules/ghn/ghn.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -31,7 +35,11 @@ import { MailModule } from './providers/mailersend.provider/mail.module';
     PromotionModule,
     PaymentModule,
     OrdersModule,
+    GhnModule,
     MailModule,
+    SmsModule,
+    NotificationsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [

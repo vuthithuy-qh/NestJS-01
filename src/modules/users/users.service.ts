@@ -17,6 +17,7 @@ import { FilterUserDto } from './dto/filter-user.dto';
 import { PaginatedUserResponse } from './dto/paginated-user-response';
 import { UpdateUserDto } from '../cats/dto/update-user.dto';
 import { CreateAddressDto } from './dto/create-address.dto';
+import { CloudinaryService } from '../../providers/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,8 @@ export class UsersService {
 
     @InjectRepository(UserAddress)
     private readonly userAddressRepository: Repository<UserAddress>,
+
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   // ================= CREATE USER =================
@@ -119,6 +122,64 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
     return user;
+  }
+
+  // ================= FIND ONE WITH ADDRESSES =================
+  async findOneWithAddresses(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'addresses',
+        'addresses.address',
+        'addresses.address.country',
+      ],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      phone: user.phone,
+      avatar: user.avatar,
+      role: user.role,
+      isActive: user.isActive,
+      addresses: (user.addresses || []).map((ua) => ({
+        id: ua.address.id,
+        unit_number: ua.address.unit_number,
+        street_number: ua.address.street_number,
+        address_line1: ua.address.address_line1,
+        address_line2: ua.address.address_line2,
+        city: ua.address.city,
+        region: ua.address.region,
+        postal_code: ua.address.postal_code,
+        country: ua.address.country?.country_name || 'Vietnam',
+        is_default: ua.is_default,
+      })),
+    };
+  }
+
+  // ================= UPDATE AVATAR =================
+  async updateAvatar(userId: number, file: Express.Multer.File) {
+    const user = await this.findOne(userId);
+
+    // Delete old avatar from Cloudinary if exists
+    if (user.avatarPublicId) {
+      await this.cloudinaryService.deleteImage(user.avatarPublicId);
+    }
+
+    // Upload new avatar
+    const result = await this.cloudinaryService.uploadImage(file, 'petshop/avatars');
+
+    user.avatar = result.secure_url;
+    user.avatarPublicId = result.public_id;
+
+    await this.userRepository.save(user);
+
+    return {
+      avatar: user.avatar,
+      message: 'Avatar updated successfully',
+    };
   }
 
   async findByEmail(email: string): Promise<User> {

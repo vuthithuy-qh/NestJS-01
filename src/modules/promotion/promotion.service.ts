@@ -8,6 +8,8 @@ import {Category} from "../category/entities/category.entity";
 import {PromotionResponseDto} from "./dto/promotion-response.dto";
 import {DiscountType} from "./enum/discount-type.enum";
 import {UpdatePromotionDto} from "./dto/update-promotion.dto";
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 @Injectable()
 export class PromotionService {
@@ -19,6 +21,7 @@ export class PromotionService {
         private promotionCategoryRepository: Repository<PromotionCategory>,
         @InjectRepository(Category)
         private categoryRepository: Repository<Category>,
+        private notificationsService: NotificationsService,
     ) {
     }
 
@@ -82,7 +85,23 @@ export class PromotionService {
             await this.promotionCategoryRepository.save(promotionCategories);
         }
 
-        return this.findOne(savedPromotion.id);
+        const result = await this.findOne(savedPromotion.id);
+
+        // Send broadcast notification
+        try {
+            const discountText = promotionData.discountType === DiscountType.PERCENTAGE
+                ? `giảm ${promotionData.discountRate}%`
+                : `giảm ${promotionData.discountAmount?.toLocaleString('vi-VN')}đ`;
+            await this.notificationsService.createBroadcast(
+                NotificationType.NEW_VOUCHER,
+                '🎉 Voucher mới!',
+                `Khuyến mãi "${savedPromotion.name}" — ${discountText}!`,
+            );
+        } catch (e) {
+            // Don't fail promotion creation if notification fails
+        }
+
+        return result;
 
     }
 

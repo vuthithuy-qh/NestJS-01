@@ -1,75 +1,80 @@
 import {
-    Column,
-    CreateDateColumn,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
-} from "typeorm";
-import {User} from "../../users/entities/user.entity";
-import {UserPaymentMethod} from "../../payment/entities/user-payment-method.entity";
-import {OrderStatus} from "./order-status.entity";
-import {ShippingMethod} from "./shipping-method.entity";
-import {OrderLine} from "./order-line.entity";
-import {Address} from "../../users/entities/address.entity";
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { UserPaymentMethod } from '../../payment/entities/user-payment-method.entity';
+import { OrderStatus } from './order-status.entity';
+import { ShippingMethod } from './shipping-method.entity';
+import { OrderLine } from './order-line.entity';
+import { Address } from '../../users/entities/address.entity';
 
-
+@Entity('shop_order')
 export class ShopOrder {
-    @PrimaryGeneratedColumn('uuid')
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
-    @Column({type: 'uuid'})
-    userId: number;
+  /* ORDER DATE */
+  @Column({ type: 'timestamp' })
+  orderDate: Date;
 
-    @ManyToOne(() => User)
-    @JoinColumn({name: 'userId'})
-    user: User
+  /* PAYMENT METHOD (nullable vì có COD) */
+  @ManyToOne(() => UserPaymentMethod, { nullable: true })
+  @JoinColumn({ name: 'payment_method_id' })
+  paymentMethod: UserPaymentMethod;
 
-    @Column({type: 'timestamp'})
-    orderDate: Date;
+  /* SHIPPING ADDRESS */
+  @ManyToOne(() => Address)
+  @JoinColumn({ name: 'shipping_address_id' })
+  address: Address;
 
-    @Column({type: 'uuid', nullable: true})
-    paymentMethodId: number;
+  /* SHIPPING METHOD */
+  @ManyToOne(() => ShippingMethod)
+  @JoinColumn({ name: 'shipping_method_id' })
+  shippingMethod: ShippingMethod;
 
-    @ManyToOne(() => UserPaymentMethod, {nullable: true})
-    @JoinColumn({name: 'paymentMethodId'})
-    paymentMethod: UserPaymentMethod;
+  /* ORDER TOTAL */
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  orderTotal: number;
 
-    @Column({type: 'uuid'})
-    shippingAddress: string;
-    @ManyToOne(() => Address)
-    @JoinColumn({name: 'shippingAddress'})
-    address: Address;
+  /* SHIPPING FEE (from GHN or other provider) */
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    default: 0,
+  })
+  shippingFee: number;
 
+  /* ORDER STATUS */
+  @ManyToOne(() => OrderStatus)
+  @JoinColumn({ name: 'order_status_id' })
+  status: OrderStatus;
 
-    @Column({ type: 'uuid' })
-    shippingMethod: string;
+  /* ORDER LINES */
+  @OneToMany(() => OrderLine, (line) => line.order, {
+    cascade: true,
+  })
+  orderLines: OrderLine[];
 
-    @ManyToOne(() => ShippingMethod)
-    @JoinColumn({ name: 'shippingMethod' })
-    shipping: ShippingMethod;
+  /* NOTES */
+  @Column({ type: 'text', nullable: true })
+  notes: string;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    orderTotal: number;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column({ type: 'uuid' })
-    orderStatus: string;
-
-    @ManyToOne(() => OrderStatus)
-    @JoinColumn({ name: 'orderStatus' })
-    status: OrderStatus;
-
-    @OneToMany(() => OrderLine, (line) => line.order, {cascade: true})
-    orderLines: OrderLine[];
-
-    @Column({type: 'text', nullable: true})
-    notes: string;
-
-    @CreateDateColumn()
-    createdAt: Date;
-
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

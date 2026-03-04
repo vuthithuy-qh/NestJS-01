@@ -35,7 +35,32 @@ export class MailService {
         .setReplyTo(this.sendFrom)
         .setSubject(data.subject)
         .setHtml(data.html);
+      // xu ly attachment neu co
 
+      // if (data.attachmentPath) {
+      //   const fileBuffer = fs.readFileSync(data.attachmentPath);
+
+      //   // mailersend yeu cau o dang base64
+      //   const base64File = fileBuffer.toString('base64');
+
+      //   /** Tao attachment
+      //    * - base64File : Noi dung file
+      //    * -fileName: ten hien thi trong email
+      //    * -disposition: 'attachment' de dinh dang la file dinh kem
+      //    */
+
+      //   const attachment = new Attachment(
+      //     base64File,
+      //     data.attachmentName || 'file',
+      //     'attachment',
+      //   );
+
+      //   /**
+      //    * Gắn attachment vào email
+      //    */
+      //   emailParams.setAttachments([attachment]); //emailParams.setAttachments([attachment1, attachment2]);
+      //   // Neu co nhieu file dinh kem
+      // }
       return await this.mailerSend.email.send(emailParams);
     } catch (error) {
       this.logger.error('Failed to send email', error);
@@ -44,34 +69,61 @@ export class MailService {
   }
 
   async sendTemplateMail(dto: SendTemplateMailDto) {
-    const recipients = [new Recipient(dto.to, dto.toName || dto.to)];
+    try {
+      const recipients = [new Recipient(dto.to, dto.toName || dto.to)];
 
-    const emailParams = new EmailParams()
-      .setFrom(this.sendFrom)
-      .setTo(recipients)
-      .setTemplateId(dto.templateId)
-      .setPersonalization([
-        {
-          email: dto.to,
-          data: dto.data,
-        },
-      ]);
+      const emailParams = new EmailParams()
+        .setFrom(this.sendFrom)
+        .setTo(recipients)
+        .setTemplateId(dto.templateId)
+        .setPersonalization([
+          {
+            email: dto.to,
+            data: dto.data, // bien truyen vao template
+          },
+        ]);
 
-    if (dto.subject) {
-      emailParams.setSubject(dto.subject);
+      if (dto.subject) {
+        emailParams.setSubject(dto.subject);
+      }
+
+      // if (dto.sendAt) {
+      //   const sendAtUnix = Math.floor(dto.sendAt.getTime() / 1000);
+      //   emailParams.setSendAt(sendAtUnix);
+      // }
+
+      if (dto.sendAt) {
+        this.logger.warn(
+          'sendAt is ignored because MailerSend Free plan does not support scheduled emails',
+        );
+      }
+      // if (dto.attachmentPath) {
+      //   const fileBuffer = fs.readFileSync(dto.attachmentPath);
+      //   const base64File = fileBuffer.toString('base64');
+
+      //   const attachments = [
+      //     {
+      //       content: base64File,
+      //       filename: dto.attachmentName || 'attachment.pdf',
+      //       disposition: 'attachment',
+      //     },
+      //   ];
+
+      //   emailParams.setAttachments(attachments);
+      // }
+      //Dich vu cua mailser send email
+      return await this.mailerSend.email.send(emailParams);
+    } catch (error) {
+      this.logger.error('Failed to send template email', error);
+      throw error;
     }
-
-    return await this.mailerSend.email.send(emailParams);
-  }
-  catch(error) {
-    this.logger.error('Failed to send template email', error);
-    throw error;
   }
 
   async sendRegisterMail(params: {
     to: string;
     name: string;
     accountName: string;
+    sendAt?: Date;
   }) {
     return this.sendTemplateMail({
       to: params.to,
@@ -82,6 +134,38 @@ export class MailService {
         name: params.name,
         account_name: params.accountName,
       },
+      sendAt: params.sendAt,
+      // attachmentPath:
+      //   'E:\\javascript\\PetShop\\pet-shop-01\\uploads\\welcome-guide.pdf',
+      // attachmentName: 'welcome-guide.pdf',
     });
   }
+
+  // async sendScheduledTemplateMail(dto: SendTemplateMailDto, sendAt: Date) {
+  //   try {
+  //     const recipients = [new Recipient(dto.to, dto.toName || dto.to)];
+
+  //     const sendAtUnix = Math.floor(sendAt.getTime() / 1000);
+
+  //     const emailParams = new EmailParams()
+  //       .setFrom(this.sendFrom)
+  //       .setTo(recipients)
+  //       .setTemplateId(dto.templateId)
+  //       .setPersonalization([
+  //         {
+  //           email: dto.to,
+  //           data: dto.data, //
+  //         },
+  //       ])
+  //       .setSendAt(sendAtUnix); // thoi gian gui dinh ky
+
+  //     if (dto.subject) {
+  //       emailParams.setSubject(dto.subject);
+  //     }
+  //     return await this.mailerSend.email.send(emailParams);
+  //   } catch (error) {
+  //     this.logger.error('Failed to send scheduled template email', error);
+  //     throw error;
+  //   }
+  // }
 }

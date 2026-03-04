@@ -31,6 +31,11 @@ export class User{
     @Column({ nullable: true })
     phone: string;
 
+    @Column({ nullable: true })
+    avatar: string;
+
+    @Column({ nullable: true })
+    avatarPublicId: string;
 
     @OneToMany(() => UserAddress, ua => ua.user)
     addresses: UserAddress[];

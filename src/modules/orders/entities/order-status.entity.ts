@@ -1,23 +1,23 @@
-import {Column, PrimaryGeneratedColumn} from "typeorm";
-
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum OrderStatusEnum {
-    PENDING = 'pending',
-    CONFIRMED = 'confirmed',
-    PROCESSING = 'processing',
-    SHIPPED = 'shipped',
-    DELIVERED = 'delivered',
-    CANCELLED = 'cancelled'
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  PROCESSING = 'processing',
+  SHIPPED = 'shipped',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
 }
 
+@Entity('order_statuses')
 export class OrderStatus {
-    @PrimaryGeneratedColumn('uuid')
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column ( {
-        type: "enum",
-        enum: OrderStatusEnum,
-        unique: true
-    })
-    status: OrderStatusEnum;
+  @Column({
+    type: 'enum',
+    enum: OrderStatusEnum,
+    unique: true,
+  })
+  status: OrderStatusEnum;
 }

@@ -12,6 +12,8 @@ import { TokenBlacklist } from './entities/token-blacklist.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResendModule } from 'src/providers/resend.provider/resend.modules';
 import { MailModule } from 'src/providers/mailersend.provider/mail.module';
+import {SMSModule} from "mailersend/lib/modules/SMS.module";
+import {SmsModule} from "../../providers/sms.provider/sms.module";
 @Module({
   imports: [
     TypeOrmModule.forFeature([TokenBlacklist]),
@@ -30,6 +32,7 @@ import { MailModule } from 'src/providers/mailersend.provider/mail.module';
     }),
     ResendModule,
     MailModule,
+      SmsModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy],

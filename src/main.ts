@@ -30,6 +30,7 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.enableCors(); // Cho phép CORS cho tất cả các nguồn gốc (bạn có thể tùy chỉnh nếu cần)
 
   await app.listen(process.env.PORT ?? 3000);
 }

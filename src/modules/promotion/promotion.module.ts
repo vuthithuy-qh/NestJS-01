@@ -5,12 +5,14 @@ import {PromotionCategory} from "./entities/PromotionCategory.enitty";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Promotion} from "./entities/promotion.entity";
 import {Category} from "../category/entities/category.entity";
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             PromotionCategory, Promotion, Category
         ]),
+        NotificationsModule,
     ],
     controllers: [PromotionController],
     providers: [PromotionService],

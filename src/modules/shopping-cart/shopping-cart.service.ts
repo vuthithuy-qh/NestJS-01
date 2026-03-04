@@ -7,6 +7,7 @@ import {Repository} from "typeorm";
 import {ShoppingCartItem} from "./entities/shopping-cart-item.entity";
 import {CatSpec} from "../cats/entities/cat-spec.entity";
 import {CartResponseDto} from "./dto/cart-response.dto";
+import {PromotionService} from "../promotion/promotion.service";
 
 @Injectable()
 export class ShoppingCartService {
@@ -16,7 +17,8 @@ export class ShoppingCartService {
       @InjectRepository(ShoppingCartItem)
       private cartItemRepository: Repository<ShoppingCartItem>,
       @InjectRepository(CatSpec)
-      private catSpecRepository: Repository<CatSpec>
+      private catSpecRepository: Repository<CatSpec>,
+      private readonly promotionService: PromotionService,
   ) {
   }
 
@@ -136,29 +138,103 @@ export class ShoppingCartService {
       return {message: 'Cart cleared successfully'};
   }
 
+  /**
+   * Remove specific items from cart (by cart-item IDs).
+   * Used when ordering only selected items.
+   */
+  async removeItems(userId: number, itemIds: number[]): Promise<void> {
+    const cart = await this.getOrCreateCart(userId);
+    for (const itemId of itemIds) {
+      await this.cartItemRepository.delete({ id: itemId, cartId: cart.id });
+    }
+  }
 
-  private mapToResponseDto(cart: ShoppingCart): CartResponseDto {
-      const items = cart.items?.map(item => ({
+
+  private async mapToResponseDto(cart: ShoppingCart): Promise<CartResponseDto> {
+      // 1. Collect unique categoryIds from cart items
+      const categoryIds = [
+        ...new Set(
+          cart.items
+            ?.map((item) => item.catSpec?.cat?.categoryId)
+            .filter(Boolean) as number[],
+        ),
+      ];
+
+      // 2. Fetch active promotions for each category in parallel
+      const promoMap = new Map<number, any>(); // categoryId → best promotion
+      if (categoryIds.length > 0) {
+        const promoResults = await Promise.all(
+          categoryIds.map((catId) =>
+            this.promotionService.findByCategory(catId).catch(() => []),
+          ),
+        );
+        categoryIds.forEach((catId, i) => {
+          const promos = promoResults[i];
+          if (promos && promos.length > 0) {
+            // Pick best promotion (highest discount) — we'll evaluate per-item later
+            promoMap.set(catId, promos);
+          }
+        });
+      }
+
+      // 3. Map items with discount info
+      const items = (cart.items || []).map((item) => {
+        const price = Number(item.catSpec.price);
+        const categoryId = item.catSpec?.cat?.categoryId || 0;
+        const promos = promoMap.get(categoryId) || [];
+
+        // Find best promotion for this price
+        let bestPromo: any = null;
+        let bestDiscountedPrice = price;
+
+        for (const promo of promos) {
+          const discounted = this.promotionService.calculatePriceAfterDiscount(
+            price,
+            promo as any,
+          );
+          if (discounted < bestDiscountedPrice) {
+            bestDiscountedPrice = discounted;
+            bestPromo = promo;
+          }
+        }
+
+        return {
           id: item.id,
           catSpecId: item.catSpec.id,
           sku: item.catSpec.sku,
-          catName: item.catSpec.cat?.name ||'',
+          catName: item.catSpec.cat?.name || '',
           catImage: item.catSpec.catImage || item.catSpec.cat?.image || '',
-          price: Number(item.catSpec.price),
+          categoryId,
+          price,
+          discountedPrice: bestDiscountedPrice,
           qty: item.qty,
-          subTotal: Number(item.catSpec.price) * item.qty
-      })) || [];
+          subTotal: bestDiscountedPrice * item.qty,
+          promotion: bestPromo
+            ? {
+                name: bestPromo.name,
+                discountType: bestPromo.discountType,
+                discountRate: bestPromo.discountRate,
+                discountAmount: bestPromo.discountAmount,
+              }
+            : null,
+        };
+      });
 
-      const totalAmount = items.reduce((sum, item) => sum + item.subTotal , 0);
+      const totalAmount = items.reduce((sum, item) => sum + item.subTotal, 0);
+      const totalOriginal = items.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0,
+      );
 
       return {
-          id: cart.id,
-          userId: cart.userId,
-          items,
-          totalItems: items.reduce((sum, item) => sum + item.qty, 0),
-            totalAmount,
-          createdAt: cart.createdAt,
-          updatedAt: cart.updatedAt,
+        id: cart.id,
+        userId: cart.userId,
+        items,
+        totalItems: items.reduce((sum, item) => sum + item.qty, 0),
+        totalAmount,
+        totalDiscount: totalOriginal - totalAmount,
+        createdAt: cart.createdAt,
+        updatedAt: cart.updatedAt,
       };
   }
 

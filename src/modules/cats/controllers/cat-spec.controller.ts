@@ -9,8 +9,12 @@ import {
     Query,
     HttpCode,
     HttpStatus,
+    UploadedFile,
+    UseInterceptors,
+    ParseIntPipe,
 } from '@nestjs/common';
 import {ApiTags, ApiOperation, ApiResponse, ApiBearerAuth} from '@nestjs/swagger';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {CatSpecService} from '../services/cat-spec.service';
 import {CreateCatSpecDto} from '../dto/create-cat-spec.dto';
 import {UpdateCatSpecDto} from '../dto/update-cat-spec.dto';
@@ -66,5 +70,19 @@ export class CatSpecController {
     @HttpCode(HttpStatus.OK)
     remove(@Param('id') id: string) {
         return this.catSpecService.remove(+id);
+    }
+
+    @Post(':id/upload-image')
+    @Roles(UserRole.ADMIN)
+    @UseInterceptors(
+        FileInterceptor('image', {
+            limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
+        }),
+    )
+    uploadImage(
+        @Param('id', ParseIntPipe) id: number,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        return this.catSpecService.uploadImage(id, file);
     }
 }

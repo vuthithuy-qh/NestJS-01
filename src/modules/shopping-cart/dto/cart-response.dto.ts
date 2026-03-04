@@ -4,11 +4,19 @@ export class CartItemResponseDto {
     id: number;
     catSpecId: number;
     sku: string;
-    price: number;
-    qty: number;
     catName: string;
     catImage: string;
-    subTotal: number
+    categoryId: number;
+    price: number;           // original price
+    discountedPrice: number; // price after promotion (= price if no promo)
+    qty: number;
+    subTotal: number;        // discountedPrice * qty
+    promotion?: {
+        name: string;
+        discountType: string;
+        discountRate: number;
+        discountAmount: number;
+    } | null;
 }
 
 export class CartResponseDto {
@@ -20,7 +28,9 @@ export class CartResponseDto {
 
     totalItems: number;
 
-    totalAmount: number;
+    totalAmount: number;     // sum of discounted subTotals
+
+    totalDiscount: number;   // total saved
 
     createdAt: Date;
 

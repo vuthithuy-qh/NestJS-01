@@ -18,6 +18,8 @@ import { TokenBlacklist } from './entities/token-blacklist.entity';
 import { LessThan, Repository } from 'typeorm';
 import { ResendService } from 'src/providers/resend.provider/resend.service';
 import { MailService } from 'src/providers/mailersend.provider/mail.service';
+import { MAILER_SEND_TEMPLATE_IDS } from 'src/utils/mailerSendTemplate';
+import { SmsService } from 'src/providers/sms.provider/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -29,17 +31,16 @@ export class AuthService {
     private mailService: MailService,
     @InjectRepository(TokenBlacklist)
     private tokenBlacklistRepository: Repository<TokenBlacklist>,
+    private smsService: SmsService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    try {
-      await this.usersService.findByEmail(registerDto.email);
-      throw new ConflictException('Email already in use');
-    } catch (error) {
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-      //email chua ton tai, tiep tuc tao user
+    const existingUser = await this.usersService
+      .findByEmail(registerDto.email)
+      .catch(() => null);
+
+    if (existingUser) {
+      throw new ConflictException('Email này đã được sử dụng rồi bạn ơi!');
     }
 
     const user = await this.usersService.create({
@@ -47,24 +48,35 @@ export class AuthService {
       role: UserRole.USER,
     });
 
-    console.log('Registered user email  :', user.email);
-
     //Tao token
     const tokens = await this.generateTokens(user);
-    const to = user.email;
-    const subject = 'Welcome to Pet Shop!';
-    const html = `<h1>Welcome to Pet Shop, ${user.fullName}!</h1>
-                      <p>Thank you for registering with us. We're excited to have you on board!</p>`;
+    try {
+      const sendAt = new Date(Date.now() + 60 * 1000); // Lên lịch gửi email sau 1 phút
 
-    //Gui email su dung ResendProvider
+      const sendEmailResponse = await this.mailService.sendRegisterMail({
+        to: user.email,
+        name: user.fullName,
+        accountName: 'Pet Shop Vu',
+      });
 
-    const sendEmailResponse = await this.mailService.sendRegisterMail({
-      to: user.email,
-      name: user.fullName,
-      accountName: 'Pet-Shop Vu',
-    });
+      console.log('Email sent successfully:', sendEmailResponse);
 
-    console.log('Email sent successfully:', sendEmailResponse);
+      //Gui Sms
+      if (user.phone) {
+        try {
+          const smsMessage = `Hello ${user.fullName}, welcome to Pet Shop Vu! Your registration is successful.`;
+          const smsResponse = await this.smsService.sendSms(
+            user.phone,
+            smsMessage,
+          );
+          console.log('SMS sent successfully:', smsResponse);
+        } catch (smsError) {
+          console.log('Error sending SMS:', smsError);
+        }
+      }
+    } catch (error) {
+      console.log('Error sending email:', error);
+    }
     return {
       ...tokens,
       user: {

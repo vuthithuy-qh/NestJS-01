@@ -4,4 +4,7 @@ export class SendTemplateMailDto extends BaseMailDto {
   subject?: string;
   templateId: string;
   data: Record<string, any>;
+  attachmentPath?: string;
+  attachmentName?: string;
+  sendAt?: Date;
 }

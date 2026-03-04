@@ -6,9 +6,13 @@ import { User } from './entities/user.entity';
 import { Country } from './entities/country.entity';
 import { Address } from './entities/address.entity';
 import { UserAddress } from './entities/user-address.entity';
+import { CloudinaryModule } from '../../providers/cloudinary/cloudinary.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Country, Address, UserAddress])],
+  imports: [
+    TypeOrmModule.forFeature([User, Country, Address, UserAddress]),
+    CloudinaryModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

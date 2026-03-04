@@ -18,7 +18,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { CurrentUser } from './decorators/current-user-decorator';
 import { User } from '../users/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { ResendProvider } from 'src/providers/ResendProvider';
+// import { ResendProvider } from 'src/providers/ResendProvider';
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {

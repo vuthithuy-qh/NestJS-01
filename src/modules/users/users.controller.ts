@@ -10,8 +10,10 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
@@ -38,7 +40,29 @@ export class UsersController {
     return this.usersService.findAll(filterDto);
   }
 
-  @Get('count')
+  @Get('me')
+  getMe(@CurrentUser('id') userId: number) {
+    return this.usersService.findOneWithAddresses(userId);
+  }
+
+  @Post('me/avatar')
+  @UseInterceptors(FileInterceptor('avatar', { storage: undefined }))
+  uploadAvatar(
+    @CurrentUser('id') userId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.updateAvatar(userId, file);
+  }
+
+  @Post('me/addresses')
+  addMyAddress(
+    @CurrentUser('id') userId: number,
+    @Body() dto: CreateAddressDto,
+  ) {
+    return this.usersService.addAddress(userId, dto);
+  }
+
+  @Get(':id')
   @Roles(UserRole.ADMIN)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
