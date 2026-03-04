@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đơn hàng của tôi | Pet Shop</title>
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <link rel="stylesheet" href="../css/orders.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <div id="header-placeholder"></div>
+
+    <main class="orders-page">
+      <div class="container">
+        <h1 class="page-title">Đơn hàng của tôi</h1>
+
+        <!-- STATUS TABS -->
+        <div class="order-tabs">
+          <button class="tab-btn active" data-status="">Tất cả</button>
+          <button class="tab-btn" data-status="pending">Chờ xác nhận</button>
+          <button class="tab-btn" data-status="confirmed">Đã xác nhận</button>
+          <button class="tab-btn" data-status="processing">Đang xử lý</button>
+          <button class="tab-btn" data-status="shipped">Đang giao</button>
+          <button class="tab-btn" data-status="delivered">Đã giao</button>
+          <button class="tab-btn" data-status="cancelled">Đã huỷ</button>
+        </div>
+
+        <!-- LOADING -->
+        <div class="loading-state" id="loadingState">
+          <div class="spinner"></div>
+          <p>Đang tải đơn hàng...</p>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div class="empty-icon">📦</div>
+          <p>Chưa có đơn hàng nào</p>
+          <a href="../../home/html/home.html" class="btn-shop-now"
+            >Mua sắm ngay</a
+          >
+        </div>
+
+        <!-- ORDER LIST -->
+        <div class="order-list" id="orderList" style="display: none"></div>
+
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination" style="display: none"></div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer-placeholder"></div>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div class="modal-overlay" id="orderDetailModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Chi tiết đơn hàng</h2>
+          <button class="modal-close" onclick="closeOrderDetail()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" id="orderDetailBody">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/orders.js"></script>
+  </body>
+</html>

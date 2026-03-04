@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pet Shop Vu — Mèo cưng cho mọi nhà</title>
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-placeholder"></div>
+
+    <!-- ===== MAIN LAYOUT ===== -->
+    <main class="main-container">
+      <!-- ===== HERO SECTION: Sidebar + Slider + Ads ===== -->
+      <section class="hero-section">
+        <!-- Category Sidebar -->
+        <aside class="category-sidebar" id="categorySidebar">
+          <h3>📂 Danh mục</h3>
+          <ul id="categoryList">
+            <li class="loading-text">Đang tải...</li>
+          </ul>
+        </aside>
+
+        <!-- Slider -->
+        <div class="hero-slider">
+          <div class="slider-wrapper" id="sliderWrapper">
+            <div class="slide active">
+              <img
+                src="https://placehold.co/800x400/a8e6cf/333?text=🐱+Mèo+Ba+Tư+Giảm+30%25"
+                alt="Banner 1"
+              />
+            </div>
+            <div class="slide">
+              <img
+                src="https://placehold.co/800x400/dcedc1/333?text=🐾+Mèo+Anh+Lông+Ngắn"
+                alt="Banner 2"
+              />
+            </div>
+            <div class="slide">
+              <img
+                src="https://placehold.co/800x400/ffd3b6/333?text=🎉+Miễn+Phí+Vận+Chuyển"
+                alt="Banner 3"
+              />
+            </div>
+          </div>
+          <button class="slider-btn prev" id="sliderPrev">❮</button>
+          <button class="slider-btn next" id="sliderNext">❯</button>
+          <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- Side Ads -->
+        <aside class="hero-ads">
+          <div class="ad-card">
+            <img
+              src="https://placehold.co/300x190/a8e6cf/333?text=🏥+Khám+Sức+Khoẻ+Miễn+Phí"
+              alt="Ad 1"
+            />
+          </div>
+          <div class="ad-card">
+            <img
+              src="https://placehold.co/300x190/dcedc1/333?text=🎁+Tặng+Phụ+Kiện+Khi+Mua+Mèo"
+              alt="Ad 2"
+            />
+          </div>
+        </aside>
+      </section>
+
+      <!-- ===== QUICK CATEGORIES (icon row) ===== -->
+      <section class="quick-categories">
+        <div
+          class="quick-cat-item"
+          data-filter-key="status"
+          data-filter-value="available"
+        >
+          <div class="quick-cat-icon">🐱</div>
+          <span>Mèo Có Sẵn</span>
+        </div>
+        <div
+          class="quick-cat-item"
+          data-filter-key="gender"
+          data-filter-value="male"
+        >
+          <div class="quick-cat-icon">♂️</div>
+          <span>Mèo Đực</span>
+        </div>
+        <div
+          class="quick-cat-item"
+          data-filter-key="gender"
+          data-filter-value="female"
+        >
+          <div class="quick-cat-icon">♀️</div>
+          <span>Mèo Cái</span>
+        </div>
+        <div
+          class="quick-cat-item"
+          data-filter-key="sortBy"
+          data-filter-value="createdAt"
+          data-sort-order="DESC"
+        >
+          <div class="quick-cat-icon">🆕</div>
+          <span>Mới Nhất</span>
+        </div>
+        <div
+          class="quick-cat-item"
+          data-filter-key="sortBy"
+          data-filter-value="price"
+          data-sort-order="ASC"
+        >
+          <div class="quick-cat-icon">💰</div>
+          <span>Giá Tốt</span>
+        </div>
+        <div
+          class="quick-cat-item"
+          data-filter-key="maxPrice"
+          data-filter-value="5000000"
+        >
+          <div class="quick-cat-icon">⚡</div>
+          <span>Flash Sale</span>
+        </div>
+      </section>
+
+      <!-- ===== PRODUCT SECTION ===== -->
+      <section class="products-section">
+        <div class="section-header">
+          <h2>🐾 Mèo Cưng Nổi Bật</h2>
+          <a href="#" class="view-all" id="viewAllBtn">Xem tất cả →</a>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <select id="filterCategory">
+            <option value="">Tất cả giống</option>
+          </select>
+          <select id="filterGender">
+            <option value="">Tất cả giới tính</option>
+            <option value="male">Đực</option>
+            <option value="female">Cái</option>
+          </select>
+          <select id="filterSort">
+            <option value="rank-DESC">⭐ Phổ biến nhất</option>
+            <option value="createdAt-DESC">Mới nhất</option>
+            <option value="price-ASC">Giá thấp → cao</option>
+            <option value="price-DESC">Giá cao → thấp</option>
+            <option value="name-ASC">Tên A-Z</option>
+          </select>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid">
+          <!-- Cards sẽ được render bằng JS -->
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Đang tải mèo cưng...</p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+      </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/home.js"></script>
+  </body>
+</html>

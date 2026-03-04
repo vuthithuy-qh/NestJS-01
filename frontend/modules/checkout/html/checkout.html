@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán — Pet Shop Vu</title>
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <!-- Module CSS -->
+    <link rel="stylesheet" href="../css/checkout.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-placeholder"></div>
+
+    <main class="checkout-page">
+      <div class="container">
+        <h1 class="page-title">📦 Thanh toán</h1>
+
+        <!-- Loading -->
+        <div id="loadingState" class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Đang tải thông tin...</p>
+        </div>
+
+        <div id="checkoutContent" style="display: none">
+          <div class="checkout-layout">
+            <!-- Left: Address + Shipping + Products -->
+            <div class="checkout-main">
+              <!-- Address Section -->
+              <section class="checkout-section">
+                <h2>📍 Địa chỉ giao hàng</h2>
+
+                <!-- Saved Addresses -->
+                <div
+                  id="savedAddresses"
+                  class="saved-addresses"
+                  style="display: none"
+                ></div>
+                <button
+                  class="btn-add-address"
+                  id="btnNewAddress"
+                  style="display: none"
+                >
+                  + Thêm địa chỉ mới
+                </button>
+
+                <!-- New Address Form (GHN cascading selects) -->
+                <div id="newAddressForm" class="new-address-form">
+                  <div class="form-row">
+                    <label class="form-label"
+                      >Tỉnh / Thành phố <span class="required">*</span></label
+                    >
+                    <select id="ghnProvince" class="form-select">
+                      <option value="">Đang tải...</option>
+                    </select>
+                  </div>
+                  <div class="form-row two-col">
+                    <div>
+                      <label class="form-label"
+                        >Quận / Huyện <span class="required">*</span></label
+                      >
+                      <select id="ghnDistrict" class="form-select" disabled>
+                        <option value="">-- Chọn Quận/Huyện --</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label"
+                        >Phường / Xã <span class="required">*</span></label
+                      >
+                      <select id="ghnWard" class="form-select" disabled>
+                        <option value="">-- Chọn Phường/Xã --</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <label class="form-label"
+                      >Địa chỉ cụ thể <span class="required">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="addrStreet"
+                      class="form-input"
+                      placeholder="Số nhà, tên đường..."
+                    />
+                  </div>
+                  <div class="form-row">
+                    <label class="form-label">Ghi chú địa chỉ</label>
+                    <input
+                      type="text"
+                      id="addrDetail"
+                      class="form-input"
+                      placeholder="Toà nhà, tầng, căn hộ... (tuỳ chọn)"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Shipping Services (from GHN) -->
+              <section class="checkout-section">
+                <h2>🚚 Phương thức vận chuyển</h2>
+                <div id="shippingServices" class="shipping-methods">
+                  <p class="shipping-note">
+                    Vui lòng chọn địa chỉ để xem phí vận chuyển
+                  </p>
+                </div>
+              </section>
+
+              <!-- Order Items -->
+              <section class="checkout-section">
+                <h2>🛒 Sản phẩm đặt mua</h2>
+                <div id="orderItems" class="order-items"></div>
+              </section>
+
+              <!-- Notes -->
+              <section class="checkout-section">
+                <h2>📝 Ghi chú</h2>
+                <textarea
+                  id="orderNotes"
+                  class="order-notes"
+                  placeholder="Ghi chú cho đơn hàng (tùy chọn)..."
+                  rows="3"
+                ></textarea>
+              </section>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="checkout-sidebar">
+              <div class="summary-card">
+                <h3>Tóm tắt đơn hàng</h3>
+                <div class="summary-row">
+                  <span>Tạm tính (<span id="itemCount">0</span> sản phẩm)</span>
+                  <span id="subtotalAmount">0₫</span>
+                </div>
+                <div
+                  class="summary-row discount-row"
+                  id="discountRow"
+                  style="display: none"
+                >
+                  <span>Giảm giá</span>
+                  <span id="discountAmount" class="discount-text">-0₫</span>
+                </div>
+                <div class="summary-row">
+                  <span>Phí vận chuyển</span>
+                  <span id="shippingFee">0₫</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                  <span>Tổng cộng</span>
+                  <span id="totalAmount">0₫</span>
+                </div>
+                <button class="btn-place-order" id="btnPlaceOrder" disabled>
+                  Đặt hàng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/checkout.js"></script>
+  </body>
+</html>

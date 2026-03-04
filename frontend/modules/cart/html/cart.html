@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ hàng — Pet Shop Vu</title>
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <!-- Module CSS -->
+    <link rel="stylesheet" href="../css/cart.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-placeholder"></div>
+
+    <main class="cart-page">
+      <div class="container">
+        <h1 class="page-title">🛒 Giỏ hàng của bạn</h1>
+
+        <!-- Loading state -->
+        <div id="loadingState" class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Đang tải giỏ hàng...</p>
+        </div>
+
+        <!-- Empty cart -->
+        <div id="emptyState" class="empty-cart" style="display: none">
+          <div class="empty-icon">🛒</div>
+          <p>Giỏ hàng trống!</p>
+          <a href="../../home/html/home.html" class="btn-primary"
+            >Tiếp tục mua sắm</a
+          >
+        </div>
+
+        <!-- Cart content -->
+        <div id="cartContent" style="display: none">
+          <div class="cart-layout">
+            <!-- Cart items -->
+            <div class="cart-items-section">
+              <div class="cart-header-row">
+                <label class="select-all-wrap">
+                  <input type="checkbox" id="selectAll" />
+                  <span>Chọn tất cả</span>
+                </label>
+                <span class="col-product">Sản phẩm</span>
+                <span class="col-price">Đơn giá</span>
+                <span class="col-qty">Số lượng</span>
+                <span class="col-subtotal">Thành tiền</span>
+                <span class="col-action">Xóa</span>
+              </div>
+              <div id="cartItems"></div>
+            </div>
+
+            <!-- Cart summary -->
+            <div class="cart-summary-section">
+              <div class="summary-card">
+                <h3>Tóm tắt đơn hàng</h3>
+                <div class="summary-row">
+                  <span
+                    >Tạm tính (<span id="selectedCount">0</span> sản phẩm)</span
+                  >
+                  <span id="subtotalAmount">0₫</span>
+                </div>
+                <div class="summary-row">
+                  <span>Giảm giá</span>
+                  <span id="discountAmount" class="discount-text">-0₫</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                  <span>Tổng cộng</span>
+                  <span id="totalAmount">0₫</span>
+                </div>
+                <button class="btn-checkout" id="btnCheckout">
+                  Tiến hành đặt hàng
+                </button>
+                <a href="../../home/html/home.html" class="btn-continue">
+                  ← Tiếp tục mua sắm
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/cart.js"></script>
+  </body>
+</html>

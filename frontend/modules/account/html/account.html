@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tài khoản | Pet Shop Vu</title>
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <link rel="stylesheet" href="../css/account.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <div id="header-placeholder"></div>
+
+    <main class="account-page">
+      <div class="account-container">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="account-sidebar">
+          <div class="sidebar-profile">
+            <div class="avatar-wrapper" id="avatarWrapper">
+              <img
+                src="https://placehold.co/120x120/d8f3dc/2d6a4f?text=👤"
+                alt="Avatar"
+                id="avatarImg"
+                class="avatar-img"
+              />
+              <div class="avatar-overlay" id="avatarOverlay">
+                <span>📷</span>
+                <span>Đổi ảnh</span>
+              </div>
+              <input type="file" id="avatarInput" accept="image/*" hidden />
+            </div>
+            <h3 class="sidebar-name" id="sidebarName">Đang tải...</h3>
+            <p class="sidebar-email" id="sidebarEmail"></p>
+          </div>
+          <nav class="sidebar-nav">
+            <button class="sidebar-btn active" data-tab="profile">
+              <span class="sidebar-icon">👤</span> Thông tin cá nhân
+            </button>
+            <button class="sidebar-btn" data-tab="orders">
+              <span class="sidebar-icon">📦</span> Đơn hàng
+            </button>
+            <button class="sidebar-btn" data-tab="notifications">
+              <span class="sidebar-icon">🔔</span> Thông báo
+              <span
+                class="notif-badge"
+                id="sidebarNotifBadge"
+                style="display: none"
+                >0</span
+              >
+            </button>
+          </nav>
+        </aside>
+
+        <!-- ===== CONTENT ===== -->
+        <section class="account-content">
+          <!-- TAB: PROFILE -->
+          <div class="tab-content active" id="tab-profile">
+            <h2 class="content-title">Thông tin cá nhân</h2>
+            <form class="profile-form" id="profileForm">
+              <div class="form-group">
+                <label for="inputFullName">Họ và tên</label>
+                <input
+                  type="text"
+                  id="inputFullName"
+                  placeholder="Nhập họ và tên"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="inputEmail">Email</label>
+                <input
+                  type="email"
+                  id="inputEmail"
+                  placeholder="Nhập email"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="inputPhone">Số điện thoại</label>
+                <input
+                  type="tel"
+                  id="inputPhone"
+                  placeholder="Nhập số điện thoại"
+                />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn-primary btn-save">
+                  💾 Lưu thay đổi
+                </button>
+              </div>
+            </form>
+
+            <hr class="divider" />
+
+            <h3 class="content-subtitle">Đổi mật khẩu</h3>
+            <form class="password-form" id="passwordForm">
+              <div class="form-group">
+                <label for="inputNewPassword">Mật khẩu mới</label>
+                <input
+                  type="password"
+                  id="inputNewPassword"
+                  placeholder="Nhập mật khẩu mới"
+                  minlength="6"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="inputConfirmPassword">Xác nhận mật khẩu</label>
+                <input
+                  type="password"
+                  id="inputConfirmPassword"
+                  placeholder="Xác nhận mật khẩu mới"
+                  minlength="6"
+                  required
+                />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn-outline btn-change-pw">
+                  🔒 Đổi mật khẩu
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB: ORDERS -->
+          <div class="tab-content" id="tab-orders">
+            <h2 class="content-title">Đơn hàng của tôi</h2>
+
+            <div class="order-tabs" id="orderTabs">
+              <button class="tab-btn active" data-status="">Tất cả</button>
+              <button class="tab-btn" data-status="pending">
+                Chờ xác nhận
+              </button>
+              <button class="tab-btn" data-status="confirmed">
+                Đã xác nhận
+              </button>
+              <button class="tab-btn" data-status="processing">
+                Đang xử lý
+              </button>
+              <button class="tab-btn" data-status="shipped">Đang giao</button>
+              <button class="tab-btn" data-status="delivered">Đã giao</button>
+              <button class="tab-btn" data-status="cancelled">Đã huỷ</button>
+            </div>
+
+            <div class="loading-state" id="ordersLoading">
+              <div class="spinner"></div>
+              <p>Đang tải đơn hàng...</p>
+            </div>
+
+            <div class="empty-state" id="ordersEmpty" style="display: none">
+              <div class="empty-icon">📦</div>
+              <p>Chưa có đơn hàng nào</p>
+              <a href="../../home/html/home.html" class="btn-primary"
+                >Mua sắm ngay</a
+              >
+            </div>
+
+            <div
+              class="order-list"
+              id="accountOrderList"
+              style="display: none"
+            ></div>
+            <div
+              class="pagination"
+              id="ordersPagination"
+              style="display: none"
+            ></div>
+          </div>
+
+          <!-- TAB: NOTIFICATIONS -->
+          <div class="tab-content" id="tab-notifications">
+            <div class="notif-header">
+              <h2 class="content-title">Thông báo</h2>
+              <button class="btn-outline btn-read-all" id="btnReadAll">
+                ✓ Đọc tất cả
+              </button>
+            </div>
+
+            <div class="loading-state" id="notifLoading">
+              <div class="spinner"></div>
+              <p>Đang tải thông báo...</p>
+            </div>
+
+            <div class="empty-state" id="notifEmpty" style="display: none">
+              <div class="empty-icon">🔔</div>
+              <p>Chưa có thông báo nào</p>
+            </div>
+
+            <div class="notif-list" id="notifList" style="display: none"></div>
+            <div
+              class="pagination"
+              id="notifPagination"
+              style="display: none"
+            ></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div class="modal-overlay" id="orderDetailModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Chi tiết đơn hàng</h2>
+          <button class="modal-close" onclick="closeOrderDetail()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" id="orderDetailBody">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/account.js"></script>
+  </body>
+</html>

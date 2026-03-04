@@ -1,0 +1,63 @@
+:root {
+  /* Màu chủ đạo - Xanh lá pastel */
+  --primary: #52b788;
+  --primary-dark: #2d6a4f;
+  --primary-light: #b7e4c7;
+  --primary-bg: #d8f3dc;
+  --primary-surface: #f0faf4;
+  --gradient-primary: linear-gradient(135deg, #52b788, #2d6a4f);
+
+  /* Màu phụ */
+  --danger: #e63946;
+  --warning: #f4a261;
+  --info: #4895ef;
+  --pink: #f07167;
+
+  /* Text */
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --text-white: #ffffff;
+
+  /* Background */
+  --bg-main: #f5f5f5;
+  --bg-white: #ffffff;
+
+  /* Border */
+  --border-light: #eeeeee;
+  --border-default: #dddddd;
+
+  /* Layout */
+  --max-width: 1280px;
+  --header-height: 64px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+
+  /* Font Family */
+  --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Font Sizes */
+  --font-xs: 11px;
+  --font-sm: 13px;
+  --font-base: 14px;
+  --font-md: 15px;
+  --font-lg: 17px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(45, 106, 79, 0.12);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.5s ease;
+}

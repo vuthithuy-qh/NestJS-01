@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký tài khoản</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <!-- Module CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <h2>Đăng ký tài khoản</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+            minlength="6"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Họ và tên</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Họ và tên"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số điện thoại</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="Số điện thoại (09...)"
+            pattern="0[0-9]{9}"
+            title="Số điện thoại gồm 10 chữ số, bắt đầu bằng 0"
+            required
+          />
+        </div>
+
+        <fieldset class="address-group">
+          <legend>Địa chỉ</legend>
+
+          <div class="form-group">
+            <label for="province">Tỉnh/Thành phố</label>
+            <select id="province" name="province" required>
+              <option value="">Chọn Tỉnh/Thành</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="district">Quận/Huyện</label>
+            <select id="district" name="district" required>
+              <option value="">Chọn Quận/Huyện</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ward">Phường/Xã</label>
+            <select id="ward" name="ward" required>
+              <option value="">Chọn Phường/Xã</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="detailAddress">Địa chỉ chi tiết</label>
+            <input
+              type="text"
+              id="detailAddress"
+              name="detailAddress"
+              placeholder="Số nhà, tên đường"
+            />
+          </div>
+        </fieldset>
+
+        <button type="submit">Đăng ký</button>
+      </form>
+      <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+    </div>
+    <!-- Shared JS TRƯỚC -->
+    <script src="../../../shared/js/config.js"></script>
+    <!-- Module JS SAU -->
+    <script src="../js/auth.js"></script>
+  </body>
+</html>

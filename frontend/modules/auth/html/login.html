@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pet Shop Vu — Đăng Nhập</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <!-- Module CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <h2>🐱 Đăng nhập</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input
+            type="email"
+            id="loginEmail"
+            name="email"
+            placeholder="Email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input
+            type="password"
+            id="loginPassword"
+            name="password"
+            placeholder="Mật khẩu"
+            required
+          />
+        </div>
+        <button type="submit">Đăng nhập</button>
+      </form>
+      <p>Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
+    </div>
+
+    <!-- Shared JS TRƯỚC -->
+    <script src="../../../shared/js/config.js"></script>
+    <!-- Module JS SAU -->
+    <script src="../js/auth.js"></script>
+  </body>
+</html>

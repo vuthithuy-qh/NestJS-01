@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết mèo — Pet Shop Vu</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="../../../shared/css/variable.css" />
+    <link rel="stylesheet" href="../../../shared/css/reset.css" />
+    <link rel="stylesheet" href="../../../shared/css/common.css" />
+    <link rel="stylesheet" href="../../../shared/css/chat-widget.css" />
+    <!-- Module CSS -->
+    <link rel="stylesheet" href="../css/cat-detail.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-placeholder"></div>
+
+    <!-- ===== BREADCRUMB ===== -->
+    <nav class="breadcrumb">
+      <div class="breadcrumb-inner">
+        <a href="../../home/html/home.html">🏠 Trang chủ</a>
+        <span class="sep">›</span>
+        <span id="breadcrumbCategory">Đang tải...</span>
+        <span class="sep">›</span>
+        <span id="breadcrumbName">Đang tải...</span>
+      </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="detail-container">
+      <!-- Loading State -->
+      <div class="loading-spinner" id="loadingState">
+        <div class="spinner"></div>
+        <p>Đang tải thông tin mèo...</p>
+      </div>
+
+      <!-- Error State -->
+      <div class="error-state" id="errorState" style="display: none">
+        <div class="empty-icon">😿</div>
+        <p id="errorMessage">Không tìm thấy mèo.</p>
+        <a href="../../home/html/home.html" class="btn-primary"
+          >← Về trang chủ</a
+        >
+      </div>
+
+      <!-- Detail Content -->
+      <div class="detail-content" id="detailContent" style="display: none">
+        <!-- LEFT: Image Gallery -->
+        <section class="gallery-section">
+          <div class="main-image">
+            <img id="mainImage" src="" alt="" />
+          </div>
+          <div class="thumbnail-list" id="thumbnailList"></div>
+        </section>
+
+        <!-- RIGHT: Product Info -->
+        <section class="info-section">
+          <h1 class="cat-name" id="catName"></h1>
+
+          <div class="cat-meta">
+            <span class="badge" id="catStatus"></span>
+            <span class="badge" id="catGender"></span>
+            <span class="cat-category" id="catCategory"></span>
+          </div>
+
+          <!-- Promotion Banner -->
+          <div id="promoInfo" style="display: none"></div>
+
+          <div class="cat-price-block">
+            <span class="current-price" id="catPrice">Liên hệ</span>
+            <span class="stock-info" id="catStock"></span>
+          </div>
+
+          <div class="cat-sku" id="catSku"></div>
+
+          <!-- Variant Selectors -->
+          <div class="variant-section" id="variantSection">
+            <!-- Variant groups sẽ được render bằng JS -->
+          </div>
+
+          <!-- Quantity -->
+          <div class="quantity-section">
+            <label>Số lượng:</label>
+            <div class="quantity-control">
+              <button id="qtyMinus" class="qty-btn">−</button>
+              <input type="number" id="qtyInput" value="1" min="1" />
+              <button id="qtyPlus" class="qty-btn">+</button>
+            </div>
+            <span class="qty-available" id="qtyAvailable"></span>
+          </div>
+
+          <!-- Actions -->
+          <div class="action-buttons">
+            <button class="btn-add-cart" id="btnAddCart">
+              🛒 Thêm vào giỏ hàng
+            </button>
+            <button class="btn-buy-now" id="btnBuyNow">⚡ Mua ngay</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Description Section -->
+      <div
+        class="description-section"
+        id="descriptionSection"
+        style="display: none"
+      >
+        <h2>📝 Mô tả chi tiết</h2>
+        <div class="description-content" id="catDescription"></div>
+      </div>
+
+      <!-- Related Cats Section -->
+      <div class="related-section" id="relatedSection" style="display: none">
+        <h2>🐾 Gợi ý mèo liên quan</h2>
+        <div class="related-grid" id="relatedGrid"></div>
+      </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../../shared/js/config.js"></script>
+    <script src="../../../shared/js/chat-widget.js"></script>
+    <script src="../js/cat-detail.js"></script>
+  </body>
+</html>
